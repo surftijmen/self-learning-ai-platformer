@@ -314,7 +314,7 @@ def main(genomes, config):
             if event.type == pygame.QUIT:
 
                 done = True
-                replay_genome(os.path.join(local_dir, "config-feedforward2.txt"))
+                replay_genome(os.path.join(local_dir, "config-feedforward.txt"))
                 pygame.quit()
                 quit()
 
@@ -357,7 +357,7 @@ def main(genomes, config):
             xtra = 0
             if x > 1100 and timer > 8:
                 xtra = 5
-            ge[x].fitness = ( (player.rect.x / 100) + xtra )
+            ge[x].fitness = (player.rect.x / 100)
 
             output = nets[x].activate((player.rect.y/ 600, player.rect.x/1500, player.closest_block[0]/300))
 
@@ -436,5 +436,5 @@ def run(config_path):
 if __name__ == "__main__":
     # main()
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, "config-feedforward2.txt")
+    config_path = os.path.join(local_dir, "config-feedforward.txt")
     run(config_path)
