@@ -18,7 +18,7 @@ GRAY = (35, 35, 35)
 STAT_FONT = pygame.font.SysFont("comicsans", 50)
 GEN = 0
 # Screen dimensions
-SCREEN_WIDTH = 1200
+SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 600
 done = False
 
@@ -53,6 +53,7 @@ class Player(pygame.sprite.Sprite):
         self.block_tops = []
         self.closest_block_distance = 1500
         self.listMade = False
+        self.amountOfJumps = 0
 
 
         # List of sprites we can bump against
@@ -127,7 +128,7 @@ class Player(pygame.sprite.Sprite):
             self.change_y = 0
             self.rect.y = SCREEN_HEIGHT - self.rect.height
 
-    def jump(self):
+    def jump(self, ge):
         """ Called when user hits 'jump' button. """
 
         # move down a bit and see if there is a platform below us.
@@ -140,6 +141,7 @@ class Player(pygame.sprite.Sprite):
         # If it is ok to jump, set our speed upwards
         if len(platform_hit_list) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
             self.change_y = -10 * SPEED
+            self.amountOfJumps+=1
 
     # Player-controlled movement:
     def stop(self):
@@ -250,9 +252,7 @@ class Level_01(Level):
         #          [50, 150, 1100, 450]
         #          ]
 
-        level = [[50, 130, 600, 470],
-                 [150, 50, 1100, 350]
-
+        level = [[50, 130, 600, 470]
         ]
 
         # Go through the array above and add platforms
@@ -358,7 +358,7 @@ def main(genomes, config):
         #set player fitness
         for x, player in enumerate(players):
 
-            ge[x].fitness = ( 0.5*(player.rect.x / 100) + 0.5*((SCREEN_HEIGHT-player.rect.y) / 100))
+            ge[x].fitness = ( 0.5*(player.rect.x / 100) + 0.5*((SCREEN_HEIGHT-player.rect.y) / 100) - player.amountOfJumps)
 
             output = nets[x].activate((player.rect.y/ 600, player.rect.x/1500, player.closest_block[0]/300))
 
@@ -368,7 +368,7 @@ def main(genomes, config):
             if (output[0] > 0):
                 player.stop()
             if output[1] > 0.5:
-                player.jump()
+                player.jump(ge[x])
             if output[0] <= 0:
                 player.go_right()
 
