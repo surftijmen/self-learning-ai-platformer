@@ -11,7 +11,7 @@ pygame.font.init()
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 150, 150)
+GREEN = (20, 200, 200)
 DARK_GREEN = (255,10,0)
 YELLOW = (200, 200, 0, 50)
 GRAY = (35, 35, 35)
@@ -210,23 +210,23 @@ class Level(object):
             if (player.closest_block != [0,0]):
                 pass
 
-            pygame.draw.line(screen, (180, 130, 200),
-                             (player.rect.x + player.image.get_width() / 2,
-                              player.rect.y + player.image.get_height() / 2),
-                             (player.closest_block[0], player.rect.y + player.rect.height / 2), 3)
-       #         pygame.draw.circle(screen, (255, 255, 0), (player.rect.x, player.rect.y), player.closest_block_distance)
+    #         pygame.draw.line(screen, (180, 130, 200),
+    #                          (player.rect.x + player.image.get_width() / 2,
+    #                           player.rect.y + player.image.get_height() / 2),
+    #                          (player.closest_block[0], player.rect.y + player.rect.height / 2), 3)
+    #    #         pygame.draw.circle(screen, (255, 255, 0), (player.rect.x, player.rect.y), player.closest_block_distance)
 
-            #draw line to finish
-            pygame.draw.line(screen, (10, 10, 200),
-                             (player.rect.x + player.image.get_width() / 2,
-                              player.rect.y + player.image.get_height() / 2),
-                             (1500, player.rect.y + player.rect.height / 2), 2)
+    #         #draw line to finish
+    #         pygame.draw.line(screen, (10, 10, 200),
+    #                          (player.rect.x + player.image.get_width() / 2,
+    #                           player.rect.y + player.image.get_height() / 2),
+    #                          (1500, player.rect.y + player.rect.height / 2), 2)
 
-            # draw line to bottom
-            pygame.draw.line(screen, (10, 100, 20),
-                             (player.rect.x + player.image.get_width() / 2,
-                              player.rect.y + player.image.get_height() / 2),
-                             (player.rect.x + player.rect.width / 2, 600), 2)
+    #         # draw line to bottom
+    #         pygame.draw.line(screen, (10, 100, 20),
+    #                          (player.rect.x + player.image.get_width() / 2,
+    #                           player.rect.y + player.image.get_height() / 2),
+    #                          (player.rect.x + player.rect.width / 2, 600), 2)
 
         # Draw all the sprite lists that we have
         self.platform_list.draw(screen)
@@ -244,13 +244,16 @@ class Level_01(Level):
         Level.__init__(self, player)
 
         # Array with width, height, x, and y of platform
-        level = [[50, 100, 200, 500],
+        # level = [[50, 100, 200, 500],
 
-                 [50, 150, 700, 450],
-                 [50, 150, 1100, 450]
-                 ]
+        #          [50, 150, 700, 450],
+        #          [50, 150, 1100, 450]
+        #          ]
 
+        level = [[50, 130, 600, 470],
+                 [150, 50, 1100, 350]
 
+        ]
 
         # Go through the array above and add platforms
         for platform in level:
@@ -261,7 +264,7 @@ class Level_01(Level):
             self.platform_list.add(block)
 
 def main(genomes, config):
-    timer = 8
+    timer = 5
     global GEN
     global done
     GEN += 1
@@ -354,10 +357,8 @@ def main(genomes, config):
 
         #set player fitness
         for x, player in enumerate(players):
-            xtra = 0
-            if x > 1100 and timer > 8:
-                xtra = 5
-            ge[x].fitness = (player.rect.x / 100)
+
+            ge[x].fitness = ( 0.5*(player.rect.x / 100) + 0.5*((SCREEN_HEIGHT-player.rect.y) / 100))
 
             output = nets[x].activate((player.rect.y/ 600, player.rect.x/1500, player.closest_block[0]/300))
 
@@ -425,7 +426,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
 
-    winner = p.run(main, 150)
+    winner = p.run(main, 10)
     with open("winner.pkl", "wb") as f:
         pickle.dump(winner, f)
         f.close()
