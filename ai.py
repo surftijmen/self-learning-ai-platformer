@@ -22,7 +22,7 @@ SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 600
 done = False
 
-SPEED = 1
+SPEED = 0.5
 
 
 class Player(pygame.sprite.Sprite):
@@ -38,8 +38,8 @@ class Player(pygame.sprite.Sprite):
 
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
-        width = 50
-        height = 50
+        width = 20
+        height = 20
         self.image = pygame.Surface([width, height])
         self.image.fill(DARK_GREEN)
 
@@ -252,7 +252,11 @@ class Level_01(Level):
         #          [50, 150, 1100, 450]
         #          ]
 
-        level = [[50, 130, 600, 470]
+        level = [[20, 50, 200, 550],
+        [20, 50, 800, 550],
+        [20, 50, 400, 550],
+        [20, 50, 900, 550],
+        [20, 50, 1300, 550]
         ]
 
         # Go through the array above and add platforms
@@ -264,7 +268,7 @@ class Level_01(Level):
             self.platform_list.add(block)
 
 def main(genomes, config):
-    timer = 5
+    timer = 6
     global GEN
     global done
     GEN += 1
@@ -356,6 +360,10 @@ def main(genomes, config):
                 break
 
         #set player fitness
+    
+        max = 0
+        maxint = 0
+
         for x, player in enumerate(players):
 
             ge[x].fitness = ( 0.5*(player.rect.x / 100) + 0.5*((SCREEN_HEIGHT-player.rect.y) / 100) - player.amountOfJumps)
@@ -363,7 +371,11 @@ def main(genomes, config):
             output = nets[x].activate((player.rect.y/ 600, player.rect.x/1500, player.closest_block[0]/300))
 
             if (ge[x].fitness > 1):
-                player.image.fill((255 - (255 / (1 + ge[x].fitness * 5)),10 * ge[x].fitness, ge[x].fitness))
+                player.image.fill((255 - (255 / (1 + ge[x].fitness * 5)),10 * ge[x].fitness, ge[x].fitness, 0.4))
+            
+            if ge[x].fitness > max:
+                max = ge[x].fitness
+                maxint = x
 
             if (output[0] > 0):
                 player.stop()
@@ -372,6 +384,7 @@ def main(genomes, config):
             if output[0] <= 0:
                 player.go_right()
 
+        players[maxint].image.fill((255,255,0))
 
         # Update the player.
         active_sprite_list.update()
@@ -426,7 +439,7 @@ def run(config_path):
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
 
-    winner = p.run(main, 10)
+    winner = p.run(main, 5)
     with open("winner.pkl", "wb") as f:
         pickle.dump(winner, f)
         f.close()
