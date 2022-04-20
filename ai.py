@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
         self.change_y = 0
         self.closest_block = [9990,99990]
         self.block_tops = []
-        self.closest_block_distance = 1500
+        self.closest_block_distance = SCREEN_WIDTH+1
         self.listMade = False
         self.amountOfJumps = 0
 
@@ -85,14 +85,15 @@ class Player(pygame.sprite.Sprite):
 
                  list[min(range(len(list)), key = lambda i: abs(list[i]-self.rect.bottom)'''
 
-        self.closest_block = [1500, 0]
+        self.closest_block = [SCREEN_WIDTH+1, 0]
         for block in self.level.platform_list:
-            if (block.rect.x > self.rect.x):
-                if (block.rect.x - self.rect.x) < self.closest_block[0]:
-                    self.closest_block[0] = block.rect.x
+            if (block.rect.x > self.rect.x) and (block.rect.x - self.rect.x) < self.closest_block[0]:
+                self.closest_block[0] = block.rect.x
+                break
+        
         for block in block_hit_list:
 
-            # If we are moving right,
+             # If we are moving right,
             # set our right side to the left side of the item we hit
             if self.change_x > 0:
                 self.rect.right = block.rect.left
@@ -253,10 +254,10 @@ class Level_01(Level):
         #          ]
 
         level = [[20, 50, 200, 550],
-        [20, 50, 800, 550],
-        [20, 50, 400, 550],
-        [20, 50, 900, 550],
-        [20, 50, 1300, 550]
+            [20, 50, 400, 550],
+            [20, 50, 800, 550],
+            [20, 50, 900, 550], 
+            [20, 50, 1300, 550]
         ]
 
         # Go through the array above and add platforms
@@ -332,7 +333,7 @@ def main(genomes, config):
                     if event.key == pygame.K_d:
                         player.go_right()
                     if event.key == pygame.K_SPACE:
-                        player.jump()
+                        player.jump(1)
 
 
                 if event.type == pygame.KEYUP:
@@ -368,7 +369,7 @@ def main(genomes, config):
 
             ge[x].fitness = ( 0.5*(player.rect.x / 100) + 0.5*((SCREEN_HEIGHT-player.rect.y) / 100) - player.amountOfJumps)
 
-            output = nets[x].activate((player.rect.y/ 600, player.rect.x/1500, player.closest_block[0]/300))
+            output = nets[x].activate((player.rect.y/ 600, player.closest_block[0]/300))
 
             if (ge[x].fitness > 1):
                 player.image.fill((255 - (255 / (1 + ge[x].fitness * 5)),10 * ge[x].fitness, ge[x].fitness, 0.4))
